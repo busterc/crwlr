@@ -3,7 +3,7 @@
 const puppeteer = require('puppeteer');
 const crwlr = require('../lib');
 
-const site = 'https://https.netlify.com/';
+const site = 'https://buster.neocities.org/crwlr/';
 
 // *** Advanced Example With Options *** //
 (async () => {
@@ -12,21 +12,28 @@ const site = 'https://https.netlify.com/';
   });
 
   const pageOptions = {
-    resolve: page => {
-      console.log(`=> resolved: ${page.url()}`);
+    prepare: page => {
+      page.on('request', request => {
+        if (request.url().match(/\.js$/)) {
+          console.log(`${page.url()} => requested: ${request.url()}`);
+        }
+      });
     },
     goto: {
       waitUntil: 'networkidle2'
     },
-    events: {
-      request: page => {
-        if (page.url().match(/\.js$/)) {
-          console.log(`=> requested: ${page.url()}`);
-        }
-      }
+    resolved: (response, page) => {
+      console.log(`=> resolved: ${response.status()} ${page.url()}`);
     }
   };
 
-  let crawledPages = await crwlr(browser, site, pageOptions);
-  console.log(`=> crawledPages: ${crawledPages}`);
+  await crwlr(browser, site, pageOptions);
 })();
+/*
+=> resolved: 200 https://buster.neocities.org/crwlr/
+=> resolved: 200 https://buster.neocities.org/crwlr/other.html
+https://buster.neocities.org/crwlr/mixed-content.html => requested: https://mixed-script.badssl.com/nonsecure.js
+=> resolved: 200 https://buster.neocities.org/crwlr/mixed-content.html
+=> resolved: 404 https://buster.neocities.org/crwlr/missing.html
+=> resolved: 200 https://buster.neocities.org/crwlr/dummy.pdf
+*/

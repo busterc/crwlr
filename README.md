@@ -7,12 +7,12 @@
 - crwlr:
   - handles the boring boilerplate work of actually crawling a site
 - You provide:
-  - a url to start from
-  - a puppeteer browser instance with your own `.launch(options)`
-  - your own page options to be applied
-    - events, like on: `request`, `console`, etc.
-    - `page.goto(options)`, like `waitUntil`
-    - `resolve(page)`, fires after `page.goto()` has resolved
+  - &lt;String&gt; `url` to start from
+  - &lt;Puppeteer Browser&gt; `browser` instance with your own `.launch(options)`
+  - `pageOptions` as you wish:
+    - &lt;Object&gt; `goto` to be provided as options to `page.goto(url, options)`
+    - &lt;Function&gt; `prepare(page)` binds event handlers and/or set properties for every new page
+    - &lt;Function&gt; `resolved(response, page)` fires after every `page.goto()` has resolved
 
 ## Installation
 
@@ -30,14 +30,21 @@ $ npm install --save crwlr
 const puppeteer = require('puppeteer');
 const crwlr = require('crwlr');
 
-const site = 'https://https.netlify.com/';
+const site = 'https://buster.neocities.org/crwlr/';
 
+// *** Basic Example Without Any Options *** //
 (async () => {
   const browser = await puppeteer.launch();
   let crawledPages = await crwlr(browser, site);
-  console.log(`=> crawledPages: ${crawledPages}`);
+  console.log(crawledPages);
 })();
-// => crawledPages: https://https.netlify.com/
+/*
+[ 'https://buster.neocities.org/crwlr/',
+  'https://buster.neocities.org/crwlr/other.html',
+  'https://buster.neocities.org/crwlr/mixed-content.html',
+  'https://buster.neocities.org/crwlr/missing.html',
+  'https://buster.neocities.org/crwlr/dummy.pdf' ]
+*/
 ```
 
 ### Advanced Example - With Options
@@ -48,7 +55,7 @@ const site = 'https://https.netlify.com/';
 const puppeteer = require('puppeteer');
 const crwlr = require('crwlr');
 
-const site = 'https://https.netlify.com/';
+const site = 'https://buster.neocities.org/crwlr/';
 
 // *** Advanced Example With Options *** //
 (async () => {
@@ -57,27 +64,31 @@ const site = 'https://https.netlify.com/';
   });
 
   const pageOptions = {
-    resolve: page => {
-      console.log(`=> resolved: ${page.url()}`);
+    prepare: page => {
+      page.on('request', request => {
+        if (request.url().match(/\.js$/)) {
+          console.log(`${page.url()} => requested: ${request.url()}`);
+        }
+      });
     },
     goto: {
       waitUntil: 'networkidle2'
     },
-    events: {
-      request: page => {
-        if (page.url().match(/\.js$/)) {
-          console.log(`=> requested: ${page.url()}`);
-        }
-      }
+    resolved: (response, page) => {
+      console.log(`=> resolved: ${response.status()} ${page.url()}`);
     }
   };
 
-  let crawledPages = await crwlr(browser, site, pageOptions);
-  console.log(`=> crawledPages: ${crawledPages}`);
+  await crwlr(browser, site, pageOptions);
 })();
-// => requested: https://https.netlify.com/redirect.js
-// => resolved: https://https.netlify.com/
-// => crawledPages: https://https.netlify.com/
+/*
+=> resolved: 200 https://buster.neocities.org/crwlr/
+=> resolved: 200 https://buster.neocities.org/crwlr/other.html
+https://buster.neocities.org/crwlr/mixed-content.html => requested: https://mixed-script.badssl.com/nonsecure.js
+=> resolved: 200 https://buster.neocities.org/crwlr/mixed-content.html
+=> resolved: 404 https://buster.neocities.org/crwlr/missing.html
+=> resolved: 200 https://buster.neocities.org/crwlr/dummy.pdf
+*/
 ```
 
 ## License

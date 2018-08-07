@@ -3,12 +3,18 @@
 const puppeteer = require('puppeteer');
 const crwlr = require('../lib');
 
-const site = 'https://https.netlify.com/';
+const site = 'https://buster.neocities.org/crwlr/';
 
 // *** Basic Example Without Any Options *** //
 (async () => {
   const browser = await puppeteer.launch();
   let crawledPages = await crwlr(browser, site);
-  console.log(`=> crawledPages: ${crawledPages}`);
+  console.log(crawledPages);
 })();
-// => crawledPages: https://https.netlify.com/
+/*
+[ 'https://buster.neocities.org/crwlr/',
+  'https://buster.neocities.org/crwlr/other.html',
+  'https://buster.neocities.org/crwlr/mixed-content.html',
+  'https://buster.neocities.org/crwlr/missing.html',
+  'https://buster.neocities.org/crwlr/dummy.pdf' ]
+*/
