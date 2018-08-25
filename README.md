@@ -1,4 +1,4 @@
-# crwlr [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
+# crwlr [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url] [![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
 
 > a minimal puppeteer crawler api
 
@@ -103,3 +103,5 @@ ISC © [Buster Collings]()
 [daviddm-url]: https://david-dm.org/busterc/crwlr
 [coveralls-image]: https://coveralls.io/repos/busterc/crwlr/badge.svg
 [coveralls-url]: https://coveralls.io/r/busterc/crwlr
+[greenkeeper-image]: https://badges.greenkeeper.io/busterc/crwlr.svg
+[greenkeeper-url]: https://greenkeeper.io/
