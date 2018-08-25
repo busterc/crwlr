@@ -2,5 +2,5 @@ language: node_js
 node_js:
   - v10
   - v8
-install: case $TRAVIS_BRANCH in greenkeeper*) npm i;; *) npm ci;; esac;
+install: npm install
 after_script: cat ./coverage/lcov.info | coveralls
