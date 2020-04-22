@@ -28,7 +28,7 @@
     "nsp": "^3.2.1",
     "prettier": "^1.14.0",
     "prettier-package-json": "^2.0.0",
-    "puppeteer": "^1.6.2"
+    "puppeteer": "^3.0.1"
   },
   "keywords": [
     "chrome",
